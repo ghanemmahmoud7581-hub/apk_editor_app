@@ -1,17 +1,15 @@
-# requirements.txt
-# Core
-flet>=0.21.0
 
-# PDF export (desktop fallback when Android PrintManager not available)
-weasyprint>=60.0
+flet
 
-# Image processing (APK icon extraction)
-Pillow>=10.0
 
-# APK parsing helpers
-androguard>=3.4.0       # analyze Dalvik bytecode / manifest
-axmlparserpy>=0.3.0     # decode binary XML from APK
+weasyprint
 
-# Type checking (dev)
-mypy>=1.0
-ruff>=0.3.0
+
+Pillow
+
+
+androguard  
+
+
+mypy
+ruff
