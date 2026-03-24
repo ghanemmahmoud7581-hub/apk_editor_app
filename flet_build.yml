@@ -1,0 +1,86 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  flet_build.yml  –  Flet Android Build Configuration
+#  Reference: https://flet.dev/docs/publish/android
+# ═══════════════════════════════════════════════════════════════════════════
+
+build:
+  # ── Entry point ──────────────────────────────────────────────────────────
+  module: main              # src/main.py  (relative to src/)
+  description: "APK Editor Pro – تحرير ملفات APK على Android"
+
+  # ── App identity ─────────────────────────────────────────────────────────
+  org: com.apkeditor
+  project: app
+  product: "APK Editor Pro"
+  company: "APK Editor"
+  copyright: "Copyright © 2024 APK Editor"
+
+  # ── Version ──────────────────────────────────────────────────────────────
+  build_number: 1
+  build_version: "1.0.0"
+
+  # ── Target ───────────────────────────────────────────────────────────────
+  platforms:
+    - android
+
+  # ── Android specific ─────────────────────────────────────────────────────
+  android:
+    min_sdk_version: 21
+    target_sdk_version: 34
+    compile_sdk_version: 34
+    permissions:
+      - android.permission.READ_EXTERNAL_STORAGE
+      - android.permission.WRITE_EXTERNAL_STORAGE
+      - android.permission.MANAGE_EXTERNAL_STORAGE
+      - android.permission.READ_MEDIA_IMAGES
+      - android.permission.READ_MEDIA_VIDEO
+      - android.permission.READ_MEDIA_AUDIO
+      - android.permission.REQUEST_INSTALL_PACKAGES
+      - android.permission.QUERY_ALL_PACKAGES
+      - android.permission.INTERNET
+      - android.permission.ACCESS_NETWORK_STATE
+      - android.permission.CAMERA
+      - android.permission.POST_NOTIFICATIONS
+      - android.permission.BLUETOOTH_CONNECT
+      - android.permission.FOREGROUND_SERVICE
+    features:
+      - android.hardware.camera
+      - android.hardware.bluetooth
+      - android.hardware.wifi
+
+  # ── Python dependencies ───────────────────────────────────────────────────
+  dependencies:
+    - flet>=0.21.0
+    - weasyprint>=60.0        # PDF export (desktop fallback)
+    - Pillow>=10.0
+
+  # ── Assets bundled into APK ───────────────────────────────────────────────
+  assets:
+    - assets/fonts/Cairo-Regular.ttf
+    - assets/fonts/Cairo-Bold.ttf
+    - assets/icons/ic_launcher.png
+    - assets/images/logo.png
+
+  # ── Splash screen ─────────────────────────────────────────────────────────
+  splash:
+    image: assets/images/logo.png
+    bgcolor: "#0d1117"
+    dark_bgcolor: "#0d1117"
+
+  # ── Icons ─────────────────────────────────────────────────────────────────
+  icon: assets/icons/ic_launcher.png
+
+  # ── Template patches (inject our MainActivity + FileProvider) ────────────
+  template_ref: main
+  template:
+    android_manifest_additional:
+      - >
+        <provider
+          android:name="androidx.core.content.FileProvider"
+          android:authorities="${applicationId}.fileprovider"
+          android:exported="false"
+          android:grantUriPermissions="true">
+          <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_provider_paths" />
+        </provider>

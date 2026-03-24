@@ -1,0 +1,111 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  .github/workflows/build_android.yml
+#  Builds the APK Editor Pro Android APK using Flet's build system
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: 🤖 Build Android APK
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags:     [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:   # manual trigger from GitHub UI
+
+env:
+  PYTHON_VERSION: "3.11"
+  FLET_VERSION:   "0.21.2"
+  JAVA_VERSION:   "17"
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────────────
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────────
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Java ────────────────────────────────────────────────────────────
+      - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+
+      # ── Android SDK ─────────────────────────────────────────────────────
+      - name: 📱 Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 🔧 Install Android build tools
+        run: |
+          sdkmanager "build-tools;34.0.0" "platforms;android-34" \
+            "platform-tools" "ndk;25.2.9519653"
+
+      # ── Python ──────────────────────────────────────────────────────────
+      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flet==${{ env.FLET_VERSION }}
+          pip install -r requirements.txt
+
+      # ── Build ────────────────────────────────────────────────────────────
+      - name: 🔨 Build Android APK (debug)
+        working-directory: src
+        run: |
+          flet build android \
+            --build-number=${{ github.run_number }} \
+            --build-version="1.0.${{ github.run_number }}" \
+            --verbose
+
+      # ── Sign (release only) ──────────────────────────────────────────────
+      - name: 🔑 Sign APK (release)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: src/build/apk/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      # ── Upload artifact ──────────────────────────────────────────────────
+      - name: 📤 Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-editor-pro-${{ github.run_number }}
+          path: |
+            src/build/apk/outputs/apk/debug/*.apk
+            src/build/apk/outputs/apk/release/*.apk
+          retention-days: 30
+
+      # ── Release (tag only) ───────────────────────────────────────────────
+      - name: 🚀 Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: src/build/apk/outputs/apk/release/*.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ───────────────────────────────────────────────────────────────────────────
+  lint:
+    name: 🔍 Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install flet==${{ env.FLET_VERSION }} ruff mypy
+      - run: ruff check src/
+      - run: mypy src/ --ignore-missing-imports

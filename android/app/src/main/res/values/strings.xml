@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">APK Editor Pro</string>
+    <string name="file_provider_authority">com.apkeditor.app.fileprovider</string>
+
+    <!-- Permission rationale messages shown to users -->
+    <string name="perm_storage_rationale">
+        يحتاج التطبيق إلى صلاحية التخزين لقراءة وتحرير ملفات APK.
+    </string>
+    <string name="perm_manage_files_rationale">
+        تتيح لك هذه الصلاحية الوصول الكامل لجميع ملفات APK على جهازك.
+    </string>
+    <string name="perm_install_rationale">
+        مطلوبة لتثبيت ملفات APK المعدّلة مباشرةً من التطبيق.
+    </string>
+
+    <!-- Print -->
+    <string name="print_job_name">فاتورة APK Editor</string>
+    <string name="print_failed">فشل الطباعة، تأكد من اتصال الطابعة</string>
+</resources>

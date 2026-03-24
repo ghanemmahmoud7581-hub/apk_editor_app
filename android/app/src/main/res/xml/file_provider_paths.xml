@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  file_provider_paths.xml
+  ───────────────────────
+  Declares URI paths exposed via FileProvider (androidx.core.content.FileProvider).
+
+  Required for:
+    • Sharing files (invoices, exported APKs) via ACTION_SEND
+    • Passing file URIs to other apps on Android 7+ (Nougat+)
+    • Print service PDF sharing
+
+  Path types:
+    <files-path>          → getFilesDir()
+    <cache-path>          → getCacheDir()
+    <external-path>       → Environment.getExternalStorageDirectory()
+    <external-files-path> → getExternalFilesDir(null)
+    <external-cache-path> → getExternalCacheDir()
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- App internal files -->
+    <files-path
+        name="internal_files"
+        path="." />
+
+    <!-- App cache (temp files) -->
+    <cache-path
+        name="cache"
+        path="." />
+
+    <!-- App-private external storage (no permission needed) -->
+    <external-files-path
+        name="external_app_files"
+        path="." />
+
+    <!-- External cache -->
+    <external-cache-path
+        name="external_cache"
+        path="." />
+
+    <!-- Full external storage (needs MANAGE_EXTERNAL_STORAGE on API 30+) -->
+    <external-path
+        name="external_storage"
+        path="." />
+
+</paths>

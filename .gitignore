@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Android build output
+android/.gradle/
+android/app/build/
+android/build/
+*.apk
+*.aab
+!app/src/main/
+
+# Flet build artifacts
+src/build/
+.flet/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+
+# Environment
+.env
+*.key
+*.jks
+keystore.properties
+
+# Temp
+*.tmp
+*.bak
+/tmp/
